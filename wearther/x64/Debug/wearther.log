@@ -1,0 +1,7 @@
+﻿  Source.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: 'APIENTRY': macro redefinition
+  (compiling source file 'Source.cpp')
+      C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\glad\glad.h(32,9):
+      see previous definition of 'APIENTRY'
+  
+  wearther.vcxproj -> C:\Users\XTEND\Desktop\HTTP\wearther\x64\Debug\weather.exe
