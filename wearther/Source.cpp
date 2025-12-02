@@ -85,6 +85,47 @@ static std::string GetCurrentTimex()
     return std::string(buffer);
 }
 
+std::string GetWeatherStatus(int code)
+{
+    switch (code)
+    {
+    case 0: return "Clear sky";
+    case 1: return "Mainly clear";
+    case 2: return "Partly cloudy";
+    case 3: return "Overcast";
+
+    case 45:
+    case 48: return "Foggy";
+
+    case 51: return "Light drizzle";
+    case 53: return "Moderate drizzle";
+    case 55: return "Dense drizzle";
+
+    case 56:
+    case 57: return "Freezing drizzle";
+
+    case 61: return "Light rain";
+    case 63: return "Moderate rain";
+    case 65: return "Heavy rain";
+
+    case 66:
+    case 67: return "Freezing rain";
+
+    case 71: return "Light snowfall";
+    case 73: return "Moderate snowfall";
+    case 75: return "Heavy snowfall";
+
+    case 80: return "Rain showers";
+    case 81: return "Moderate showers";
+    case 82: return "Violent showers";
+
+    case 95: return "Thunderstorm";
+    case 96:
+    case 99: return "Thunderstorm with hail";
+
+    default: return "Unknown weather";
+    }
+}
 
 // ----------------------------------------------------------
 // MAIN
@@ -118,25 +159,75 @@ int main(int, char**)
     double wind;
     try {
         if (lat != 0.0 || lon != 0.0) {
+
             httplib::Client cli("http://api.open-meteo.com");
+
             std::ostringstream url;
-            url << "/v1/forecast?latitude=" << lat
+            url << "/v1/forecast?"
+                << "latitude=" << lat
                 << "&longitude=" << lon
-                << "&current_weather=true";
+                << "&current_weather=true"
+                << "&hourly=temperature_2m,wind_speed_10m,relative_humidity_2m,weathercode"
+                << "&timezone=auto";
 
             if (auto res = cli.Get(url.str().c_str())) {
                 if (res->status == 200) {
+
                     json w = json::parse(res->body);
+                    std::cout << "===== FULL JSON RESPONSE =====\n";
+                    std::cout << w.dump(4) << "\n";
+
+                    // ------------------------------
+                    // CURRENT WEATHER
+                    // ------------------------------
                     if (w.contains("current_weather")) {
                         temp = w["current_weather"].value("temperature", 0.0);
-                         wind = w["current_weather"].value("windspeed", 0.0);
-                        std::cout << "Temperature: " << temp << " C\n";
+                        wind = w["current_weather"].value("windspeed", 0.0);
+
+                        std::cout << "Temperature: " << temp << " °C\n";
                         std::cout << "Wind Speed: " << wind << " km/h\n";
+                    }
+
+                    // ------------------------------
+                    // HOURLY WEATHER (SAFE CHECK)
+                    // ------------------------------
+                    if (w.contains("hourly")) {
+                        auto hourly = w["hourly"];
+
+                        // --- Weathercode now ---
+                        if (hourly.contains("weathercode") && !hourly["weathercode"].empty()) {
+                            int code_now = hourly["weathercode"][0];
+                            std::string status = GetWeatherStatus(code_now);
+
+                            std::cout << "Weather Status: " << status << "\n";
+                        }
+
+                        // --- Hourly Temperature ---
+                        if (hourly.contains("temperature_2m") && !hourly["temperature_2m"].empty()) {
+                            double t0 = hourly["temperature_2m"][0];
+                            std::cout << "Hourly Temp: " << t0 << " °C\n";
+                        }
+
+                        // --- Hourly Wind ---
+                        if (hourly.contains("wind_speed_10m") && !hourly["wind_speed_10m"].empty()) {
+                            double wind0 = hourly["wind_speed_10m"][0];
+                            std::cout << "Hourly Wind: " << wind0 << " km/h\n";
+                        }
+
+                        // --- Hourly Humidity ---
+                        if (hourly.contains("relative_humidity_2m") && !hourly["relative_humidity_2m"].empty()) {
+                            int hum0 = hourly["relative_humidity_2m"][0];
+                            std::cout << "Hourly Humidity: " << hum0 << " %\n";
+                        }
                     }
                 }
             }
         }
     }
+    catch (std::exception& e) {
+        std::cout << "Error: " << e.what() << "\n";
+    }
+
     catch (...) {
         std::cout << "Weather fetch failed\n";
     }
