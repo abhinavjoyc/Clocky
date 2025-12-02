@@ -5,12 +5,4 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(1
       C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\glad\glad.h(32,9):
       see previous definition of 'APIENTRY'
   
-  imgui.cpp
-  imgui_draw.cpp
-  imgui_impl_opengl3.cpp
-  imgui_impl_sdl2.cpp
-  imgui_tables.cpp
-  imgui_widgets.cpp
-  Generating Code...
-  glad.c
   wearther.vcxproj -> C:\Users\XTEND\Desktop\HTTP\wearther\x64\Debug\wearther.exe
