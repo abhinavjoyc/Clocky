@@ -8,3 +8,13 @@ x64/
 x86/
 bin/
 obj/
+.vs/
+*.ipch
+*.db
+*.pdb
+Debug/
+Release/
+x64/
+x86/
+bin/
+obj/
