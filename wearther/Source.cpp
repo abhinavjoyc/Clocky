@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "image.h"
-
+//
 #include <SDL.h>
 #include <SDL_opengl.h>
 
@@ -20,69 +20,17 @@
 
 #include<chrono>
 #include<ctime>
-#include <string>
+
+
+#include <SDL_mixer.h>
+
+
+
+
+#include "Weather.h"
+#include "pomedoro.h"
 using json = nlohmann::json;
 
-
-
-void RenderCustomTabs(int& activeTab)
-{
-    // Style for rounded buttons
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 14.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(18, 12));
-
-    // Light button background
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.85f, 0.85f, 0.85f, 0.15f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.85f, 0.85f, 0.85f, 0.30f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.20f, 0.20f, 0.20f, 0.90f));
-
-    // Center the tab group horizontally
-    float width = ImGui::GetWindowWidth();
-    ImGui::SetCursorPosX((width - 360) * 0.5f);
-
-    // ---- TAB 0 : WEATHER ----
-    ImGui::PushStyleColor(ImGuiCol_Text,
-        activeTab == 0 ? ImVec4(0, 0, 0, 1) : ImVec4(0.4f, 0.4f, 0.4f, 1));
-
-    if (ImGui::Button("Weather", ImVec2(110, 40))) {
-        std::cout << "[TAB CLICKED] -> Weather\n";
-        activeTab = 0;
-    }
-    ImGui::PopStyleColor();
-
-    ImGui::SameLine();
-
-    // ---- TAB 1 : DETAILS ----
-    ImGui::PushStyleColor(ImGuiCol_Text,
-        activeTab == 1 ? ImVec4(0, 0, 0, 1) : ImVec4(0.4f, 0.4f, 0.4f, 1));
-
-    if (ImGui::Button("Details", ImVec2(110, 40))) {
-        std::cout << "[TAB CLICKED] -> Details\n";
-        activeTab = 1;
-    }
-    ImGui::PopStyleColor();
-
-    ImGui::SameLine();
-
-    // ---- TAB 2 : SETTINGS ----
-    ImGui::PushStyleColor(ImGuiCol_Text,
-        activeTab == 2 ? ImVec4(0, 0, 0, 1) : ImVec4(0.4f, 0.4f, 0.4f, 1));
-
-    if (ImGui::Button("Settings", ImVec2(110, 40))) {
-        std::cout << "[TAB CLICKED] -> Settings\n";
-        activeTab = 2;
-    }
-    ImGui::PopStyleColor();
-
-    // POP STYLES
-    ImGui::PopStyleColor(3);
-    ImGui::PopStyleVar(2);
-}
-
-
-// ----------------------------------------------------------
-// Texture Loader
-// ----------------------------------------------------------
 static GLuint LoadTexture(const char* filename)
 {
     if (!filename) {
@@ -126,105 +74,61 @@ static GLuint LoadTexture(const char* filename)
 
 
 
-//-------------------------Get current time -------------------------------------
-
-static std::string GetCurrentTimex()
+void RenderCustomTabs(int& activeTab)
 {
-    auto now = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    // Style for rounded buttons
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 14.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(18, 12));
 
-    std::tm local{};
-    localtime_s(&local, &t);   // SAFE & warning-free
+    // Light button background
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.85f, 0.85f, 0.85f, 0.15f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.85f, 0.85f, 0.85f, 0.30f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.20f, 0.20f, 0.20f, 0.90f));
 
-    char buffer[32];
-    std::strftime(buffer, sizeof(buffer), "%H:%M:%S", &local);
+    // Center the tab group horizontally
+    float width = ImGui::GetWindowWidth();
+    ImGui::SetCursorPosX((width - 360) * 0.5f);
 
-    return std::string(buffer);
-}
+    // ---- TAB 0 : WEATHER ----
+    ImGui::PushStyleColor(ImGuiCol_Text,
+        activeTab == 0 ? ImVec4(0, 0, 0, 1) : ImVec4(0.4f, 0.4f, 0.4f, 1));
 
-std::string GetWeatherStatus(int code)
-{
-    switch (code)
-    {
-    case 0: return "Clear sky";
-    case 1: return "Mainly clear";
-    case 2: return "Partly cloudy";
-    case 3: return "Overcast";
-
-    case 45:
-    case 48: return "Foggy";
-
-    case 51: return "Light drizzle";
-    case 53: return "Moderate drizzle";
-    case 55: return "Dense drizzle";
-
-    case 56:
-    case 57: return "Freezing drizzle";
-
-    case 61: return "Light rain";
-    case 63: return "Moderate rain";
-    case 65: return "Heavy rain";
-
-    case 66:
-    case 67: return "Freezing rain";
-
-    case 71: return "Light snowfall";
-    case 73: return "Moderate snowfall";
-    case 75: return "Heavy snowfall";
-
-    case 80: return "Rain showers";
-    case 81: return "Moderate showers";
-    case 82: return "Violent showers";
-
-    case 95: return "Thunderstorm";
-    case 96:
-    case 99: return "Thunderstorm with hail";
-
-    default: return "Unknown weather";
+    if (ImGui::Button("Pomodoro", ImVec2(110, 40))) {
+        std::cout << "[TAB CLICKED] -> pomodoro\n";
+        activeTab = 0;
     }
+    ImGui::PopStyleColor();
+
+    ImGui::SameLine();
+
+    // ---- TAB 1 : DETAILS ----
+    ImGui::PushStyleColor(ImGuiCol_Text,
+        activeTab == 1 ? ImVec4(0, 0, 0, 1) : ImVec4(0.4f, 0.4f, 0.4f, 1));
+
+    if (ImGui::Button("Weather", ImVec2(110, 40))) {
+        std::cout << "[TAB CLICKED] -> Wether\n";
+        activeTab = 1;
+    }
+    ImGui::PopStyleColor();
+
+    ImGui::SameLine();
+
+    // ---- TAB 2 : SETTINGS ----
+    ImGui::PushStyleColor(ImGuiCol_Text,
+        activeTab == 2 ? ImVec4(0, 0, 0, 1) : ImVec4(0.4f, 0.4f, 0.4f, 1));
+
+    if (ImGui::Button("Settings", ImVec2(110, 40))) {
+        std::cout << "[TAB CLICKED] -> Settings\n";
+        activeTab = 2;
+    }
+    ImGui::PopStyleColor();
+
+    // POP STYLES
+    ImGui::PopStyleColor(3);
+    ImGui::PopStyleVar(2);
 }
-void RenderGlassTabs(int& activeTab)
-{
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(28, 14));
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 26.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
 
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1, 1, 1, 0.65f));
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.85f, 0.85f, 0.85f, 0.35f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.95f, 0.95f, 0.95f, 0.45f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.20f, 0.20f, 0.20f, 0.70f));
 
-    const float w = 160, h = 50, gap = 14;
-    float total = w * 4 + gap * 3;
-    float x = (ImGui::GetWindowWidth() - total) * 0.5f;
-    ImGui::SetCursorPosX(x);
-
-    auto Tab = [&](const char* label, int id)
-        {
-            ImGui::PushStyleColor(ImGuiCol_Text,
-                activeTab == id ? ImVec4(0, 0, 0, 1) : ImVec4(0, 0, 0, 0.65f)
-            );
-
-            if (ImGui::Button(label, ImVec2(w, h)))
-            {
-                std::cout << "[TAB CLICKED] -> " << label << std::endl;
-                activeTab = id;
-            }
-
-            ImGui::PopStyleColor();
-
-            if (id != 3)
-                ImGui::SameLine(0.0f, gap);
-        };
-
-    Tab("Weather", 0);
-    Tab("Details", 1);
-    Tab("Statistics", 2);
-    Tab("Settings", 3);
-
-    ImGui::PopStyleColor(4);
-    ImGui::PopStyleVar(3);
-}
 
 
 
@@ -233,105 +137,6 @@ void RenderGlassTabs(int& activeTab)
 // ----------------------------------------------------------
 int main(int, char**)
 {
-    // ------------------------- Get Location -------------------------
-    double lat = 0.0, lon = 0.0;
-    std::string city;
-    try {
-        httplib::Client geo("http://ip-api.com");
-        if (auto res = geo.Get("/json")) {
-            if (res->status == 200) {
-                json j = json::parse(res->body);
-                lat = j.value("lat", 0.0);
-                lon = j.value("lon", 0.0);
-              city = j.value("city", "unknown");
-                std::cout << "Location: " << city << std::endl;
-
-
-                    std::cout<< " latitude =" <<lat << std::endl<<"longitude " << lon << ")\n";
-            }
-        }
-    }
-    catch (...) {
-        std::cout << "Location fetch failed\n";
-    }
-
-    // ----------------------- Get Weather ----------------------------
-    double temp;
-    double wind;
-    try {
-        if (lat != 0.0 || lon != 0.0) {
-
-            httplib::Client cli("http://api.open-meteo.com");
-
-            std::ostringstream url;
-            url << "/v1/forecast?"
-                << "latitude=" << lat
-                << "&longitude=" << lon
-                << "&current_weather=true"
-                << "&hourly=temperature_2m,wind_speed_10m,relative_humidity_2m,weathercode"
-                << "&timezone=auto";
-
-            if (auto res = cli.Get(url.str().c_str())) {
-                if (res->status == 200) {
-
-                    json w = json::parse(res->body);
-                    std::cout << "===== FULL JSON RESPONSE =====\n";
-                    std::cout << w.dump(4) << "\n";
-
-                    // ------------------------------
-                    // CURRENT WEATHER
-                    // ------------------------------
-                    if (w.contains("current_weather")) {
-                        temp = w["current_weather"].value("temperature", 0.0);
-                        wind = w["current_weather"].value("windspeed", 0.0);
-
-                        std::cout << "Temperature: " << temp << " °C\n";
-                        std::cout << "Wind Speed: " << wind << " km/h\n";
-                    }
-
-                    // ------------------------------
-                    // HOURLY WEATHER (SAFE CHECK)
-                    // ------------------------------
-                    if (w.contains("hourly")) {
-                        auto hourly = w["hourly"];
-
-                        // --- Weathercode now ---
-                        if (hourly.contains("weathercode") && !hourly["weathercode"].empty()) {
-                            int code_now = hourly["weathercode"][0];
-                            std::string status = GetWeatherStatus(code_now);
-
-                            std::cout << "Weather Status: " << status << "\n";
-                        }
-
-                        // --- Hourly Temperature ---
-                        if (hourly.contains("temperature_2m") && !hourly["temperature_2m"].empty()) {
-                            double t0 = hourly["temperature_2m"][0];
-                            std::cout << "Hourly Temp: " << t0 << " °C\n";
-                        }
-
-                        // --- Hourly Wind ---
-                        if (hourly.contains("wind_speed_10m") && !hourly["wind_speed_10m"].empty()) {
-                            double wind0 = hourly["wind_speed_10m"][0];
-                            std::cout << "Hourly Wind: " << wind0 << " km/h\n";
-                        }
-
-                        // --- Hourly Humidity ---
-                        if (hourly.contains("relative_humidity_2m") && !hourly["relative_humidity_2m"].empty()) {
-                            int hum0 = hourly["relative_humidity_2m"][0];
-                            std::cout << "Hourly Humidity: " << hum0 << " %\n";
-                        }
-                    }
-                }
-            }
-        }
-    }
-    catch (std::exception& e) {
-        std::cout << "Error: " << e.what() << "\n";
-    }
-
-    catch (...) {
-        std::cout << "Weather fetch failed\n";
-    }
 
     // ----------------------------------------------------------
     // SDL INIT
@@ -371,41 +176,57 @@ int main(int, char**)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiStyle& style = ImGui::GetStyle();
+
+
     style.Colors[ImGuiCol_Button] = ImVec4(0, 0, 0, 0);
     style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0, 0, 0, 0);
     style.Colors[ImGuiCol_ButtonActive] = ImVec4(0, 0, 0, 0);
     style.FrameBorderSize = 0.0f;
 
     ImGuiIO& io = ImGui::GetIO();
+    io.IniFilename = NULL;
+    io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
 
 
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    stbi_set_flip_vertically_on_load(0);
+   
 
-    // ----------------------------------------------------------
-    // Load Textures
-    // ----------------------------------------------------------
-    GLuint bgtex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/x64/Debug/image1.jpg");
-    GLuint icontex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/wearther/assets/images/thunderstorm.png");
+  
 
     // ----------------------------------------------------------
     // MAIN LOOP
     // ----------------------------------------------------------
     bool running = true;
     SDL_Event e;
+    GLuint bgtex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/x64/Debug/image1.jpg");
+    GLuint icontex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/wearther/assets/images/thunderstorm.png");
+    GLuint clockTex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/wearther/assets/images/stopwatch.png");
+    GLuint arrowTex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/wearther/assets/images/arrow.jpg");
+    GLuint startTex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/wearther/assets/images/start.png");
+    GLuint stopTex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/wearther/assets/images/stop.png");
+    GLuint pauseTex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/wearther/assets/images/pause.png");
+    GLuint resetTex = LoadTexture("C:/Users/XTEND/Desktop/HTTP/wearther/wearther/assets/images/reset.png");
     io.Fonts->AddFontDefault();
+
     ImFont* bigFont = io.Fonts->AddFontFromFileTTF(
         "C:/Users/XTEND/Desktop/HTTP/wearther/wearther/assets/fonts/ScienceGothic-Medium.ttf",
         8.0f
     );
 
-    static std::string currentTime = GetCurrentTimex();
-    static double lastUpdate = ImGui::GetTime();
 
-    int activeTab = 1;   // <-- FIX: outside main loop
 
+    std::vector<GLuint> textures;
+    textures.push_back(bgtex);
+    textures.push_back(icontex);
+    textures.push_back(clockTex);
+    textures.push_back(arrowTex);
+    textures.push_back(startTex);
+    textures.push_back(stopTex);
+    textures.push_back(pauseTex);
+    textures.push_back(resetTex);
+    int activeTab = 0;   
     while (running)
     {
         while (SDL_PollEvent(&e)) {
@@ -416,158 +237,48 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
+       
+        if (activeTab == 0)
 
-        //====================================================
-        // 1) BACKGROUND  (bottom-most layer)
-        //====================================================
-        ImGui::SetNextWindowPos({ 0, 0 });
-        ImGui::SetNextWindowSize(io.DisplaySize);
-
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0,0,0,0 });
-
-        ImGui::Begin("BG", nullptr,
-            ImGuiWindowFlags_NoDecoration |
-            ImGuiWindowFlags_NoInputs |
-            ImGuiWindowFlags_NoMove |
-            ImGuiWindowFlags_NoResize);
-
-        ImGui::Image((ImTextureID)(intptr_t)bgtex, io.DisplaySize);
-        ImGui::End();
-
-        ImGui::PopStyleColor();
-        ImGui::PopStyleVar(3);
+        {
+            ImGui::SetWindowFontScale(6.0f);
+           PomederoTab (io,textures,bigFont);
 
 
-        //====================================================
-        // 2) CENTER ICON
-        //====================================================
-        ImGui::SetNextWindowPos({ 0, 0 });
-        ImGui::SetNextWindowSize(io.DisplaySize);
-
-        ImGui::Begin("Icon", nullptr,
-            ImGuiWindowFlags_NoDecoration |
-            ImGuiWindowFlags_NoBackground |
-            ImGuiWindowFlags_NoInputs);
-
-        ImVec2 iconSize(300, 200);
-        ImVec2 iconPos(
-            (io.DisplaySize.x - iconSize.x) * 0.5f,
-            (io.DisplaySize.y - iconSize.y) * 0.5f - 150
-        );
-
-        ImGui::SetCursorPos(iconPos);
-        ImGui::Image((ImTextureID)(intptr_t)icontex, iconSize);
-        ImGui::End();
-
-
-        //====================================================
-        // 3) WEATHER TEXT (UNDER THE ICON)
-        //====================================================
-        ImGui::SetNextWindowPos({ 0, 0 });
-        ImGui::SetNextWindowSize(io.DisplaySize);
-
-        ImGui::Begin("WeatherText", nullptr,
-            ImGuiWindowFlags_NoDecoration |
-            ImGuiWindowFlags_NoBackground);
-
-        ImGui::PushFont(bigFont);
-        ImGui::PushStyleColor(ImGuiCol_Text, { 0,0,0,1 });
-
-        std::string wind1 = "Wind Speed is " + std::to_string(wind).substr(0, 3) + " km/hr";
-        std::string temp1 = "Current Temperature " + std::to_string(temp).substr(0, 4);
-
-        std::string weather = temp1 + "\n" + wind1;
-
-        ImVec2 ws = ImGui::CalcTextSize(weather.c_str());
-        ImVec2 weatherPos(
-            io.DisplaySize.x * 0.5f - ws.x * 0.5f,
-            io.DisplaySize.y * 0.5f + 30
-        );
-
-        ImGui::SetCursorPos(weatherPos);
-        ImGui::Text("%s", weather.c_str());
-
-        ImGui::PopStyleColor();
-        ImGui::PopFont();
-        ImGui::End();
-
-
-        //====================================================
-        // 4) TIME (BELOW WEATHER, FIXED)
-        //====================================================
-        ImGui::SetNextWindowPos({ 0, 0 });
-        ImGui::SetNextWindowSize(io.DisplaySize);
-
-        ImGui::Begin("Time", nullptr,
-            ImGuiWindowFlags_NoDecoration |
-            ImGuiWindowFlags_NoBackground |
-            ImGuiWindowFlags_NoInputs);
-
-        ImGui::PushStyleColor(ImGuiCol_Text, { 0,0,0,1 });
-        ImGui::SetWindowFontScale(6.0f);
-
-        ImVec2 timePos(
-            (io.DisplaySize.x - iconSize.x) * 0.5f,
-            (io.DisplaySize.y - iconSize.y) * 0.5f + 200
-        );
-
-        ImGui::SetCursorPos(timePos);
-
-        double now = ImGui::GetTime();
-        if (now - lastUpdate >= 1) {
-            currentTime = GetCurrentTimex();
-            lastUpdate = now;
         }
-
-        ImGui::Text("%s", currentTime.c_str());
-        ImGui::PopStyleColor();
-        ImGui::End();
-
-
-        //====================================================
-        // 5) CITY (top-left — unchanged)
-        //====================================================
-        ImGui::SetNextWindowPos({ 0, 0 });
-        ImGui::SetNextWindowSize(io.DisplaySize);
-
-        ImGui::Begin("City", nullptr,
-            ImGuiWindowFlags_NoDecoration |
-            ImGuiWindowFlags_NoBackground);
-
-        ImGui::PushFont(bigFont);
-        ImGui::PushStyleColor(ImGuiCol_Text, { 0,0,0,1 });
-        ImGui::SetCursorPos({ 20, 1 });
-        ImGui::SetWindowFontScale(4.0f);
-        ImGui::Text("%s", city.c_str());
-        ImGui::PopStyleColor();
-        ImGui::PopFont();
-        ImGui::End();
-
-
-        //====================================================
-        // 6) TABS (TOP BAR — draw LAST so clickable)
-        //====================================================
+      
+        if (activeTab == 1)
+        {
+            ImGui::SetWindowFontScale(6.0f);
+       weathertab(io, textures, bigFont);
+            // -----------------------------------------------------------
+            // 8. TABS BAR
+            // -----------------------------------------------------------
+           
+        }
         ImGui::SetNextWindowPos({ 0, 6 });
         ImGui::SetNextWindowSize({ io.DisplaySize.x, 80 });
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 6 });
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0,0,0,0 });
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0, 0, 0, 0 });
 
         ImGui::Begin("Tabs", nullptr,
             ImGuiWindowFlags_NoDecoration |
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoBackground);
+            ImGuiWindowFlags_NoBackground |
+            ImGuiWindowFlags_NoNavFocus |          // <-- FIX HERE
+            ImGuiWindowFlags_NoFocusOnAppearing    // <-- FIX HERE
+        );
 
-        RenderGlassTabs(activeTab);
+
+        RenderCustomTabs(activeTab);
+
+
         ImGui::End();
 
         ImGui::PopStyleColor();
         ImGui::PopStyleVar();
-
 
         //================= RENDER =================
         ImGui::Render();

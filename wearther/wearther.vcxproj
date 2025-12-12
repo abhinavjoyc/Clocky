@@ -106,13 +106,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\json;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\http;$(ProjectDir)include\imgui;$(ProjectDir)include\;$(ProjectDir)include\SDL2;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\image;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\mixer;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\json;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\http;$(ProjectDir)include\imgui;$(ProjectDir)include\;$(ProjectDir)include\SDL2;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\image;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -124,16 +124,19 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\json;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\http;$(ProjectDir)include\imgui;$(ProjectDir)include\;$(ProjectDir)include\SDL2;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\image;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\mixer;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\json;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\http;$(ProjectDir)include\imgui;$(ProjectDir)include\;$(ProjectDir)include\SDL2;C:\Users\XTEND\Desktop\HTTP\wearther\wearther\include\image;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="customTabs.cpp" />
+    <ClCompile Include="http.cpp" />
+    <ClCompile Include="pomedoro.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\imgui.cpp" />
@@ -142,9 +145,16 @@
     <ClCompile Include="src\imgui_impl_sdl2.cpp" />
     <ClCompile Include="src\imgui_tables.cpp" />
     <ClCompile Include="src\imgui_widgets.cpp" />
+    <ClCompile Include="time.cpp" />
+    <ClCompile Include="Weather.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="customTabs.h" />
+    <ClInclude Include="http.h" />
     <ClInclude Include="include\image\image.h" />
+    <ClInclude Include="pomedoro.h" />
+    <ClInclude Include="time.h" />
+    <ClInclude Include="Weather.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
